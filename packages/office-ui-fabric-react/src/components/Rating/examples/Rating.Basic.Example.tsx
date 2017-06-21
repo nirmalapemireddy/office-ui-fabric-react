@@ -42,6 +42,14 @@ export class RatingBasicExample extends React.Component<any, any> {
           onChanged={ this._onChanged }
         />
 
+        Half star:
+        <Rating
+          min={ 1 }
+          max={ 5 }
+          rating={ 2.5}
+          enableHalfStar={ true }
+        />
+
         Disabled:
         <Rating
           min={ 1 }
@@ -49,6 +57,14 @@ export class RatingBasicExample extends React.Component<any, any> {
           rating={ this.state.rating }
           onChanged={ this._onChanged }
           disabled={ true }
+        />
+
+        ReadOnly:
+        <Rating
+          min={ 1 }
+          max={ 5 }
+          rating={ 2.5}
+          isReadOnly={ true }
         />
       </div>
     );

@@ -14,13 +14,62 @@ $Rating-largeIconSize: 20px;
   opacity: 0;
   top: 0px;
 }
+.msRating {
+  position: relative;
+}
+
+.ratingComponent {
+  display: inline-block;
+}
+
+.greyStarComponent {
+  position: absolute;
+  font-size: $Rating-smallIconSize;
+  display: inline-block;
+  .greyLabel {
+      display: inline-block;
+      cursor: pointer;
+
+      width: $Rating-smallIconSize;
+      padding:  12px, 0px;
+
+      // Reserve space for focus styling
+      border: 1px solid transparent;
+    }
+    .rootIsLarge & {
+    .greyLabel {
+      font-size: $Rating-largeIconSize;
+      width: $Rating-largeIconSize;
+      padding: 6px 2px 9px 2px;
+    }
+  }
+}
+
+.greyStar {
+  //position: absolute;
+  left: 0px;
+  color: $Rating-disabledColor;
+  border: 0px solid transparent;
+}
+
+.halfStar {
+  width: 50%;
+  overflow: hidden;
+  margin-left: -4px;
+  margin-right: 4px;
+}
 
 .container {
   position: relative;
   display: inline-block;
 
   &:hover {
-    .star:not(.starIsDisabled) {
+
+    .star:not(.starIsDisabled):not(.starIsReadonly) {
+      .halfStar {
+        width: 100%;
+        margin: 0px;
+      }
       color: $Rating-selectedColor;
 
       &.star:hover {
@@ -37,17 +86,29 @@ $Rating-largeIconSize: 20px;
   .star {
     display: inline-block;
 
+    position: relative;
     text-align: center;
 
     color: $Rating-defaultColor;
 
     &.starIsSelected {
       color: $Rating-selectedColor;
+      @media screen and (-ms-high-contrast: active) {
+        color: rgb(255, 255, 0);
+     }
     }
 
     &.starIsDisabled {
       color: $Rating-disabledColor;
+       @media screen and (-ms-high-contrast: active) {
+        color: $Rating-disabledColor;
+       }
+      .label {
+        cursor: default;
+      }
+    }
 
+    &.starIsReadonly {
       .label {
         cursor: default;
       }
@@ -58,7 +119,7 @@ $Rating-largeIconSize: 20px;
       cursor: pointer;
 
       font-size: $Rating-smallIconSize;
-      padding: 12px 0px;
+      padding: 12px, 0px;
 
       // Reserve space for focus styling
       border: 1px solid transparent;
@@ -80,4 +141,15 @@ $Rating-largeIconSize: 20px;
 // Highlight focused star
 :global(.ms-Fabric.is-focusVisible) .starIsInFocus .label {
   border: 1px solid $focusedBorderColor;
+  .halfStar {
+      width: 100%;
+      margin: 0px;
+    }
+
+   @media screen and (-ms-high-contrast: active) {
+      @include focus-border(1px, $ms-color-white, 2px, false);
+    }
+    @media screen and (-ms-high-contrast: black-on-white) {
+      @include focus-border(1px, $ms-color-black, 3px, false);
+    }
 }

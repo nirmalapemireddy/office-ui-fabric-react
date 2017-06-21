@@ -102,4 +102,59 @@ describe('Rating', () => {
     }
   });
 
+   it('When rating is readOnly cannot change rating', () => {
+    let exception;
+    let threwException = false;
+    let choiceGroup;
+    try {
+      choiceGroup = ReactTestUtils.renderIntoDocument<Rating>(
+        <Rating
+          isReadOnly={ true }
+          />
+      );
+    } catch (e) {
+      exception = e;
+      threwException = true;
+    }
+    expect(threwException).to.be.false;
+
+    let renderedDOM = ReactDOM.findDOMNode(choiceGroup as React.ReactInstance);
+    let choiceOptions = renderedDOM.querySelectorAll('.ms-Rating-input');
+
+    expect(choiceOptions).to.have.length(0, `Rating is not read Only`);
+  });
+
+ it('Enable Half star rating.', () => {
+    let exception;
+    let threwException = false;
+    let rating;
+    try {
+      rating = ReactTestUtils.renderIntoDocument<Rating>(
+        <Rating
+          rating={ 2.5 }
+          enableHalfStar= { true }
+          />
+      );
+    } catch (e) {
+      exception = e;
+      threwException = true;
+    }
+    expect(threwException).to.be.false;
+
+    let renderedDOM = ReactDOM.findDOMNode(rating as React.ReactInstance);
+
+    let ratingInputs = renderedDOM.querySelectorAll('.ms-Rating-input');
+
+    const checkState = (ratingToCheck: number, state: boolean) => {
+      expect((ratingInputs[ratingToCheck - 1] as HTMLInputElement).checked).to.be.eq(
+        state,
+        `Rating ${ratingToCheck} should be ${!state && 'selected' || ''} selected`);
+    };
+
+    checkState(1, false);
+    checkState(2, false);
+    checkState(3, true);
+    checkState(4, false);
+    checkState(5, false);
+  });
 });

@@ -53,6 +53,16 @@ export interface IRatingProps extends React.HTMLAttributes<HTMLElement> {
    * Optional id of label describing this instance of Rating
    */
   ariaLabelId?: string;
+
+  /**
+   * Optional flag to mark rating control as readOnly
+   */
+  isReadOnly?: boolean;
+
+  /**
+   * Optional flag  enable half star. Displays half star if the value for any decimal value of the star
+   */
+  enableHalfStar?: boolean;
 }
 
 export enum RatingSize {

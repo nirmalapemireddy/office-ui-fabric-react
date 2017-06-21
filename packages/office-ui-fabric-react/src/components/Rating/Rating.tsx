@@ -45,14 +45,19 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
 
   public render() {
     let stars: JSX.Element[] = [];
+    let greyStars: JSX.Element[] = [];
     for (let i = this.props.min; i <= this.props.max; ++i) {
       stars.push(this._renderStar(i));
+      greyStars.push(this._getGreyIcon(i));
     }
 
-    return <div className={ css('ms-Rating', this.props.className, {
+    return <div className={ css('ms-Rating', this.props.className, styles.msRating, {
       ['ms-Rating--large ' + styles.rootIsLarge]: this.props.size === RatingSize.Large
     }) } role='application'>
-      <div className={ css('ms-Rating-container', styles.container) } role='radiogroup' aria-labelledby={ this.props.ariaLabelId }>
+     {this.props.enableHalfStar && <div className={css('ms-Rating-greystar', styles.greyStarComponent)} >
+        {greyStars}
+     </div>}
+      <div className={ css('ms-Rating-container', styles.container) } role= 'radiogroup' aria-labelledby={ this.props.ariaLabelId } >
         { stars }
       </div>
     </div>;
@@ -60,13 +65,17 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
 
   private _renderStar(rating: number): JSX.Element {
     const inputId = `${this._id}-${rating}`;
-
-    return <div className={ css('ms-Rating-star', styles.star, {
-      ['is-selected ' + styles.starIsSelected]: rating <= this.state.rating,
+    let isHalfStar: boolean = false;
+    if (this.state.rating < rating && Math.ceil(this.state.rating) === rating) {
+      isHalfStar = true;
+    }
+    return(<div className={ css('ms-Rating-star', styles.star, {
+      ['is-selected ' + styles.starIsSelected]: rating <= Math.ceil(this.state.rating),
       ['is-inFocus ' + styles.starIsInFocus]: rating === this.state.focusedRating,
-      ['is-disabled ' + styles.starIsDisabled]: this.props.disabled
+      ['is-disabled ' + styles.starIsDisabled]: this.props.disabled,
+      ['is-readOnly '+ styles.starIsReadonly]: this.props.isReadOnly
     }) } key={ rating }>
-      <input
+      {!this.props.isReadOnly && <input
         className={ css('ms-Rating-input', styles.input) }
         type='radio'
         name={ this._id }
@@ -74,16 +83,16 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
         value={ rating }
         aria-labelledby={ `${this._labelId}-${rating}` }
         disabled={ this.props.disabled }
-        checked={ rating === this.state.rating }
+        checked={ rating === Math.ceil(this.state.rating) }
         onChange={ this._onChange.bind(this, rating) }
         onFocus={ this._onFocus.bind(this, rating) }
         onBlur={ this._onBlur.bind(this, rating) }
-      />
+      /> }
       <label className={ css('ms-Rating-label', styles.label) } htmlFor={ inputId }>
         { this._getLabel(rating) }
-        { this._getIcon() }
+         { this._getIcon(isHalfStar) }
       </label>
-    </div>;
+    </div> );
   }
 
   private _onFocus(value: number, ev: React.FocusEvent<HTMLElement>): void {
@@ -122,8 +131,19 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
     );
   }
 
-  private _getIcon(): JSX.Element {
+  private _getIcon(isHalfStar: boolean): JSX.Element {
+     if (isHalfStar) {
+      return <Icon iconName={ this.props.icon || 'favoriteStarFill' } className={ css('ms-ratingStar', styles.ratingStar, { ['isHalfStar ' + styles.halfStar]: isHalfStar }) } />;
+    }
+
     return <Icon iconName={ this.props.icon || 'favoriteStarFill' } />;
+  }
+
+  private _getGreyIcon(rating: number): JSX.Element {
+    return  <div style={{display: 'inline-block'}}  key={ rating } >
+     <label className={ css('ms-GreyRating-label', styles.greyLabel) } >
+     <Icon iconName={ this.props.icon || 'favoriteStarFill' } className={ css('ms-greyStar', styles.greyStar) } /> </label>
+    </div>;
   }
 
   private _getInitialValue(props: IRatingProps) {
@@ -139,7 +159,9 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
   }
 
   private _getClampedRating(rating: number): number {
-    rating = Math.floor(rating);
+    if(!this.props.enableHalfStar) {
+      rating = Math.floor(rating);
+    }
 
     return Math.min(Math.max(rating, this.props.min), this.props.max);
   }
