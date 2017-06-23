@@ -24,6 +24,7 @@ export class RatingBasicExample extends React.Component<any, any> {
           max={ 5 }
           rating={ this.state.rating }
           onChanged={ this._onChanged }
+
         />
 
         <Rating
@@ -40,6 +41,7 @@ export class RatingBasicExample extends React.Component<any, any> {
           size={ RatingSize.Large }
           rating={ this.state.rating }
           onChanged={ this._onChanged }
+          enablePartialRating={ true }
         />
 
         Disabled:
@@ -49,6 +51,24 @@ export class RatingBasicExample extends React.Component<any, any> {
           rating={ this.state.rating }
           onChanged={ this._onChanged }
           disabled={ true }
+        />
+
+        halfstar:
+        <Rating
+          min={ 1 }
+          max={ 5 }
+          rating={ 2.3 }
+          onChanged={ this._onChanged }
+          enablePartialRating={ true }
+        />
+
+        Readonly:
+        <Rating
+          min={ 1 }
+          max={ 5 }
+          rating={ 2.5 }
+          onChanged={ this._onChanged }
+          readOnly={ true }
         />
       </div>
     );

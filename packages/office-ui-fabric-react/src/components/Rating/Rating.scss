@@ -18,8 +18,28 @@ $Rating-largeIconSize: 20px;
 .container {
   position: relative;
   display: inline-block;
+  .halfStarSpan {
+     position: relative;
+     .fullStar {
+        visibility:  collapse;
+      }
 
-  &:hover {
+      .halfStar {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+  }
+
+
+&:hover {
+    .halfStar {
+      visibility: collapse;
+
+    }
+    .fullStar {
+      visibility: visible;
+      }
     .star:not(.starIsDisabled) {
       color: $Rating-selectedColor;
 
@@ -33,7 +53,6 @@ $Rating-largeIconSize: 20px;
       }
     }
   }
-
   .star {
     display: inline-block;
 
@@ -43,11 +62,16 @@ $Rating-largeIconSize: 20px;
 
     &.starIsSelected {
       color: $Rating-selectedColor;
+      @media screen and (-ms-high-contrast: active) {
+        color: rgb(255, 255, 0);
+     }
     }
 
     &.starIsDisabled {
       color: $Rating-disabledColor;
-
+       @media screen and (-ms-high-contrast: active) {
+        color: $Rating-disabledColor;
+       }
       .label {
         cursor: default;
       }
@@ -63,6 +87,7 @@ $Rating-largeIconSize: 20px;
       // Reserve space for focus styling
       border: 1px solid transparent;
     }
+
   }
 
   .rootIsLarge & {
@@ -80,4 +105,11 @@ $Rating-largeIconSize: 20px;
 // Highlight focused star
 :global(.ms-Fabric.is-focusVisible) .starIsInFocus .label {
   border: 1px solid $focusedBorderColor;
+   @media screen and (-ms-high-contrast: active) {
+      @include focus-border(1px, $ms-color-white, 2px, false);
+    }
+
+    @media screen and (-ms-high-contrast: black-on-white) {
+      @include focus-border(1px, $ms-color-black, 3px, false);
+    }
 }

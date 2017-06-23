@@ -52,7 +52,7 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
     return <div className={ css('ms-Rating', this.props.className, {
       ['ms-Rating--large ' + styles.rootIsLarge]: this.props.size === RatingSize.Large
     }) } role='application'>
-      <div className={ css('ms-Rating-container', styles.container) } role='radiogroup' aria-labelledby={ this.props.ariaLabelId }>
+      <div className={ css('ms-Rating-container', styles.container) } aria-label={ this.props.ariaLabel ? this.props.ariaLabel : this._getRatingComponentAriaLabel() } tabIndex={ this.props.disabled ? -1 : 0 } >
         { stars }
       </div>
     </div>;
@@ -62,26 +62,25 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
     const inputId = `${this._id}-${rating}`;
 
     return <div className={ css('ms-Rating-star', styles.star, {
-      ['is-selected ' + styles.starIsSelected]: rating <= this.state.rating,
+      ['is-selected ' + styles.starIsSelected]: rating <= Math.ceil(this.state.rating),
       ['is-inFocus ' + styles.starIsInFocus]: rating === this.state.focusedRating,
       ['is-disabled ' + styles.starIsDisabled]: this.props.disabled
     }) } key={ rating }>
-      <input
+
+      { !this.props.readOnly && <button
         className={ css('ms-Rating-input', styles.input) }
-        type='radio'
         name={ this._id }
         id={ inputId }
         value={ rating }
         aria-labelledby={ `${this._labelId}-${rating}` }
         disabled={ this.props.disabled }
-        checked={ rating === this.state.rating }
-        onChange={ this._onChange.bind(this, rating) }
+        onClick={ this._onChange.bind(this, rating) }
         onFocus={ this._onFocus.bind(this, rating) }
         onBlur={ this._onBlur.bind(this, rating) }
-      />
+      /> }
       <label className={ css('ms-Rating-label', styles.label) } htmlFor={ inputId }>
         { this._getLabel(rating) }
-        { this._getIcon() }
+        { this._getIcon(rating) }
       </label>
     </div>;
   }
@@ -109,6 +108,12 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
     }
   }
 
+  private _getRatingComponentAriaLabel() {
+    const text = this.props.ariaLabelIcon || 'Star';
+    let rating: number = this.state.rating ? this.state.rating : 0;
+    return rating + " of " + this.props.max + " " + text + " selected";
+  }
+
   private _getLabel(rating: number): JSX.Element {
     const text = this.props.ariaLabelIcon || 'Star';
 
@@ -122,9 +127,15 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
     );
   }
 
-  private _getIcon(): JSX.Element {
+  private _getIcon(rating: number): JSX.Element {
+    if (rating === Math.ceil(this.state.rating) && rating > this.state.rating && this.props.enablePartialRating) {
+
+      return <span className={ css('halfStarSpan', styles.halfStarSpan) }> <Icon iconName={ this.props.icon || 'Contrast' } className={ css('halfStar', styles.halfStar) } />
+        <Icon iconName={ this.props.icon || 'favoriteStarFill' } className={ css('fullStar', styles.fullStar) } /> </span>;
+    }
     return <Icon iconName={ this.props.icon || 'favoriteStarFill' } />;
   }
+
 
   private _getInitialValue(props: IRatingProps) {
     if (typeof props.rating === 'undefined') {
@@ -139,7 +150,10 @@ export class Rating extends BaseComponent<IRatingProps, IRatingState> {
   }
 
   private _getClampedRating(rating: number): number {
-    rating = Math.floor(rating);
+    if (!this.props.enablePartialRating) {
+      rating = Math.floor(rating);
+    }
+
 
     return Math.min(Math.max(rating, this.props.min), this.props.max);
   }

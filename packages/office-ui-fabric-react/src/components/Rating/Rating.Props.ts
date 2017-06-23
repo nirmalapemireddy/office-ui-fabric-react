@@ -35,6 +35,11 @@ export interface IRatingProps extends React.HTMLAttributes<HTMLElement> {
   icon?: string;
 
   /**
+  * Custom icon for partial rating like 0.5, defaults to icon if icon is defined. Else default to FavoriteStar
+  */
+  partialIcon?: string;
+
+  /**
    * Size of rating, defaults to small
    */
   size?: RatingSize;
@@ -50,9 +55,19 @@ export interface IRatingProps extends React.HTMLAttributes<HTMLElement> {
   ariaLabelIcon?: string;
 
   /**
-   * Optional id of label describing this instance of Rating
+   * Optional ariaLabel for rating
    */
-  ariaLabelId?: string;
+  ariaLabel?: string;
+
+  /**
+  * Optional : Reaonly control
+  */
+  readOnly?: boolean;
+
+  /**
+  * Optional : enables partial rating display.
+  */
+  enablePartialRating?: boolean;
 }
 
 export enum RatingSize {
